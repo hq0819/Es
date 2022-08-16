@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hq.es.dao.PartnerListMapper">
+
+
+    <select id="queryPartnerList" resultType="com.hq.es.pojo.PartnerList">
+        select * from (
+                          SELECT
+                              A.ROW_ID AS "partnerId",
+                              A.NAME AS "name",
+                              A.MISC_FLG as "targetCustomerFlag",
+                              A.CUST_STAT_CD AS "status",
+                              B.X_EXSNYC_FLAG AS "snycFlg",
+                              B.X_ATTRIB_133 AS "accountLevel",
+                              B.ATTRIB_50 AS "accountType",
+                              B.X_ATTRIB_103 AS "province",
+                              B.X_ATTRIB_104 AS "city",
+                              B.X_ATTRIB_110 AS "area",
+                              D.LAST_NAME AS "salerName",
+                              E.LOGIN AS "salerLogin",
+                              A.PR_POSTN_ID as "salerPositionId",
+                              G.VAL AS "businessCenter",
+                              ROUND(J.ATTRIB_22, 2) AS "sales",
+                              ROUND(H.X_ATTRIB_101, 2) AS "target",
+                              ROUND(I.JIEYONG_AMOUNT, 2) AS "borrow",
+                              ROUND(I.RECEIPT_AMOUNT, 2) AS "receipt",
+                              L.NAME AS "industry",
+                              NVL2(K.ROW_ID, 'Y', 'N') AS "collectionFlag",
+                              K.ROW_ID AS "collectionId",
+                              A.CREATED  as "created",
+                              ROUND(A.HIST_SLS_VOL,2) AS "histSlsVol",
+                              M.ZSD_KEY08 as "receivableTrouble",
+                              M.ZSD_KEY10 as "borrowTrouble",
+                              M.ZSD_KEY04 as "unresolvedTrouble",
+                              M.ZSD_KEY09 as "backLetterTrouble"
+
+                          FROM SIEBEL.S_ORG_EXT A
+
+                                   LEFT JOIN SIEBEL.S_ORG_EXT_X B
+                                             ON A.ROW_ID = B.PAR_ROW_ID
+
+                                   LEFT JOIN SIEBEL.S_POSTN C
+                                             ON A.PR_POSTN_ID = C.ROW_ID
+
+                                   LEFT JOIN SIEBEL.S_CONTACT D
+                                             ON C.PR_EMP_ID = D.ROW_ID
+
+                                   LEFT JOIN SIEBEL.S_USER E
+                                             ON C.PR_EMP_ID = E.ROW_ID
+
+                                   LEFT JOIN SIEBEL.S_ORG_EXT F
+                                             ON A.BU_ID = F.ROW_ID
+
+                                   LEFT JOIN SIEBEL.S_LST_OF_VAL G
+                                             ON F.NAME = G.NAME
+                                                 AND G.TYPE = 'HIK_BRANCH_CENTER'
+
+                                   LEFT JOIN SIEBEL.S_ORG_EXT_XM H
+                                             ON H.PAR_ROW_ID = A.ROW_ID
+                                                 AND H.X_ATTRIB_99 = TO_CHAR(SYSDATE, 'YYYY')
+                                                 AND H.TYPE = 'Partner BP - NonDist'
+
+                                   LEFT JOIN SIEBEL.CX_ACCOUNT_SAP I
+                                             ON B.ATTRIB_44 = I.SAP_ID
+                                                 AND SOURCE = 'GNYX'
+
+                                   LEFT JOIN SIEBEL.S_ORG_EXT_XM J
+                                             ON J.PAR_ROW_ID = A.ROW_ID
+                                                 AND J.NAME = TO_CHAR(SYSDATE, 'YYYY') || '年海康实际采购额'
+                                                 AND J.TYPE = 'Purchase Analysis'
+
+                                   LEFT JOIN SIEBEL.S_ORG_EXT_XM K
+                                             ON K.PAR_ROW_ID = A.ROW_ID
+                                                 AND K.ATTRIB_01 = '1-PD6NCH'
+                                                 AND K.TYPE = 'Collection'
+
+                                   LEFT JOIN SIEBEL.S_INDUST L
+                                             ON B.X_ATTRIB_115 = L.ROW_ID
+
+                                   LEFT JOIN SIEBEL.T_SALES_WARNING M
+                                             ON A.ROW_ID = M.ROW_ID
+
+                          WHERE (A.SRV_PROVDR_FLG = 'Y' OR A.PRTNR_FLG = 'Y')
+                      )
+    </select>
+</mapper>

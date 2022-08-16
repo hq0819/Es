@@ -1,0 +1,33 @@
+spring:
+ # rabbitmq:
+  #  host: 14.18.72.130
+ #   port: 5672
+ #   username: admin
+  #  password: admin
+  elasticsearch:
+    username: heqin
+    password: heqin
+    uris:
+      - http://10.1.161.100:9200
+    restclient:
+      sniffer:
+        interval: 10
+        delayAfterFailure: 5
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: siebel
+    password: HIKUAT705
+    url: jdbc:oracle:thin:@10.1.44.151:1521/CRMPRD.WORLD
+
+
+
+server:
+  port: 8001
+mybatis:
+  mapper-locations: classpath:mappings/*.xml
+
+
+
+
+
+
